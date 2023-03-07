@@ -1,16 +1,27 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import { useDispatch, useSelector } from 'react-redux';
+import { createPost, getPosts } from '../feature/post.slice';
 
-const NewPost = ({ userId }) => {
+const NewPost = () => {
 	const [message, setMessage] = useState('');
+	const userId = useSelector((state) => state.user.userId);
+	const dispatch = useDispatch();
 
 	const handleForm = (e) => {
 		e.preventDefault();
 
-		axios.post('http://localhost:5000/post/', {
+		const data = {
 			message,
 			author: userId,
-		});
+			// Créer un ID provisoir en attendant le retour de la Base de donnée
+			_id: Date.now(),
+		};
+
+		axios.post('http://localhost:5000/post/', data);
+		dispatch(createPost(data));
+		// getPost car il faut aller chercher l'ID créé par MongoDB
+		dispatch(getPosts());
 
 		setMessage('');
 	};
